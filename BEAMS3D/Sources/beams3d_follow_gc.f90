@@ -173,7 +173,7 @@ SUBROUTINE beams3d_follow_gc
     ALLOCATE(R_box(mystart:myend), Z_box(mystart:myend), &
              PHI_box(mystart:myend), vll_box(mystart:myend), moment_box(mystart:myend), &
              neut_box(mystart:myend), S_box(mystart:myend), U_box(mystart:myend), &
-              B_box(mystart:myend). line_box(mystart:myend), STAT = ier)
+              B_box(mystart:myend), line_box(mystart:myend), STAT = ier)
     IF (ier /= 0) CALL handle_err(ALLOC_ERR, 'R_LINES, PHI_LINES, Z_LINES', ier)
     ALLOCATE(t_last(mystart:myend), STAT = ier)
     IF (ier /= 0) CALL handle_err(ALLOC_ERR, 't_last', ier)
@@ -506,15 +506,15 @@ SUBROUTINE beams3d_follow_gc
     CALL beams3d_write_parhdf5(0, npoinc, 1, nparticles, mystart, myend,      'B_lines', DBLVAR=B_lines)
     CALL beams3d_write1d_parhdf5(         1, nparticles, mystart, myend,      't_end',   DBLVAR=t_last,FILENAME='beams3d_'//TRIM(id_string))
     sizeb=SIZE(line_box)
-    CALL beams3d_write_parhdf5(0, sizeb,      'R_box', DBLVAR=R_box)                                                                                                                                                                           
-    CALL beams3d_write_parhdf5(0, sizeb,    'PHI_box', DBLVAR=PHI_box)                                                                                                                                                                         
-    CALL beams3d_write_parhdf5(0, sizeb,      'Z_box', DBLVAR=Z_box)                                                                                                                                                                           
-    CALL beams3d_write_parhdf5(0, sizeb,    'vll_box', DBLVAR=vll_box)                                                                                                                                                                         
-    CALL beams3d_write_parhdf5(0, sizeb, 'moment_box', DBLVAR=moment_box)                                                                                                                                                                      
-    CALL beams3d_write_parhdf5(0, sizeb,      'S_box', DBLVAR=S_box)                                                                                                                                                                           
-    CALL beams3d_write_parhdf5(0, sizeb,      'U_box', DBLVAR=U_box)                                                                                                                                                                           
-    CALL beams3d_write_parhdf5(0, sizeb,      'B_box', DBLVAR=B_box)
-    CALL beams3d_write_parhdf5(0, sizeb,      'line_box', DBLVAR=line_box)
+    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,      'R_box', DBLVAR=R_box)                                                                                                                                                                           
+    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,   'PHI_box', DBLVAR=PHI_box)                                                                                                                                                                         
+    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,     'Z_box', DBLVAR=Z_box)                                                                                                                                                                           
+    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,   'vll_box', DBLVAR=vll_box)                                                                                                                                                                         
+    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend, 'moment_box', DBLVAR=moment_box)                                                                                                                                                                      
+    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,     'S_box', DBLVAR=S_box)                                                                                                                                                                           
+    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,     'U_box', DBLVAR=U_box)                                                                                                                                                                           
+    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,     'B_box', DBLVAR=B_box)
+    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,     'line_box', INTVAR=line_box)
     ALLOCATE(itemp(0:npoinc,mystart:myend))
     itemp = 0; WHERE(neut_lines) itemp=1;
     CALL beams3d_write_parhdf5(0, npoinc, 1, nparticles, mystart, myend,   'neut_lines', INTVAR=itemp)

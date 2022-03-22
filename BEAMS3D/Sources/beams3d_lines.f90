@@ -32,7 +32,9 @@
                      fact_coul, &
                      partpmax, h2_prof, h3_prof, h4_prof, h5_prof
       LOGICAL, ALLOCATABLE     :: neut_lines(:,:)
+      LOGICAL, ALLOCATABLE     :: neut_box(:)
       INTEGER, ALLOCATABLE     :: end_state(:)
+      INTEGER, ALLOCATABLE     :: line_box(:)
       REAL(rprec), ALLOCATABLE :: shine_through(:), shine_port(:), GFactor(:)
       REAL(rprec), DIMENSION(:,:), POINTER :: ndot_prof(:,:),epower_prof(:,:), &
                                   ipower_prof(:,:),j_prof(:,:), dense_prof(:,:)
@@ -40,6 +42,6 @@
       REAL(rprec), ALLOCATABLE :: R_lines(:,:),Z_lines(:,:),PHI_lines(:,:),vll_lines(:,:),moment_lines(:,:),&
                                   S_lines(:,:),U_lines(:,:),B_lines(:,:)
       REAL(rprec), ALLOCATABLE :: R_box(:), Z_box(:), PHI_box(:),&
-                             vll_box(:), neut_box(:), moment_box(:), S_box(:), U_box(:), B_box(:), line_box(:)
+                             vll_box(:), moment_box(:), S_box(:), U_box(:), B_box(:)
 
       END MODULE beams3d_lines

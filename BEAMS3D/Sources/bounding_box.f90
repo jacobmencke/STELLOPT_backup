@@ -57,13 +57,13 @@ SUBROUTINE bounding_box(t, q)
     IF ((q(1) >= 5.00) .and. (q(1) <= 6.29) .and. &
         (x0 >= 1.47) .and. (x0 <= 1.63) .and. &
         (q(3) >= -0.05) .and. (q(3) <= 0.59)) THEN
-       CALL ADDTOLIST(line_box,myline)
+       CALL ADDTOLISTINT(line_box,myline)
        CALL ADDTOLIST(R_box, q(1))
        CALL ADDTOLIST(PHI_box,q(2))
        CALL ADDTOLIST(Z_box,q(3))
        CALL ADDTOLIST(vll_box,q(4))
        CALL ADDTOLIST(moment_box,moment)
-       CALL ADDTOLIST(neut_box,lneut)
+       CALL ADDTOLISTBOL(neut_box,lneut)
        i = MIN(MAX(COUNT(raxis < q(1)),1),nr-1)
        j = MIN(MAX(COUNT(phiaxis < x0),1),nphi-1)
        k = MIN(MAX(COUNT(zaxis < q(3)),1),nz-1)
@@ -79,9 +79,10 @@ SUBROUTINE bounding_box(t, q)
                        hr(i),hri(i),hp(j),hpi(j),hz(k),hzi(k),&
                        U4D(1,1,1,1),nr,nphi,nz)
        z0 = fval(1)
-       CALL ADDTOLIST(U_lines,z0)
+       CALL ADDTOLIST(U_box,z0)
        CALL R8HERM3FCN(ict,1,1,fval,i,j,k,xparam,yparam,zparam,&
                        hr(i),hri(i),hp(j),hpi(j),hz(k),hzi(k),&
                        MODB4D(1,1,1,1),nr,nphi,nz)
-       CALL ADDTOLIST(B_lines,fval(1))
-   END IF
+       CALL ADDTOLIST(B_box,fval(1))
+    END IF
+END SUBROUTINE bounding_box

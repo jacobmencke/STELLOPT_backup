@@ -39,5 +39,7 @@
       REAL(rprec), DIMENSION(:,:,:,:,:,:), POINTER :: dist5d_prof
       REAL(rprec), ALLOCATABLE :: R_lines(:,:),Z_lines(:,:),PHI_lines(:,:),vll_lines(:,:),moment_lines(:,:),&
                                   S_lines(:,:),U_lines(:,:),B_lines(:,:)
+      REAL(rprec), ALLOCATABLE :: R_box(:), Z_box(:), PHI_box(:),&
+                             vll_box(:), neut_box(:), moment_box(:), S_box(:), U_box(:), B_box(:), line_box(:)
 
       END MODULE beams3d_lines

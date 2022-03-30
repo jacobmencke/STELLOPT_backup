@@ -68,7 +68,10 @@ SUBROUTINE beams3d_follow_gc
     DOUBLE PRECISION, PARAMETER :: electron_mass = 9.10938356D-31 !m_e
     DOUBLE PRECISION, PARAMETER :: sqrt_pi       = 1.7724538509   !pi^(1/2)
     DOUBLE PRECISION, PARAMETER :: e_charge      = 1.60217662E-19 !e_c
-
+    
+    !Added
+    character(len=10) :: file_id
+    character(len=50) :: filename
     !-----------------------------------------------------------------------
     !     External Functions
     !          fgc_nag            RHS of ODE integrator (for NAG)    for BEAMS3D
@@ -76,7 +79,7 @@ SUBROUTINE beams3d_follow_gc
     !          D02CJW               NAG Dummy function
     !          jacobian_lsode       Jacobian function (for LSODE, not currently utilized)
     !-----------------------------------------------------------------------
-    EXTERNAL D02CJF, D02CJW, fgc_nag, D02CJX, out_beams3d_nag
+    EXTERNAL D02CJF, D02CJW, fgc_nag, D02CJX, out_beams3d_nag, bounding_box
     EXTERNAL fgc_lsode, jacobian_lsode
     EXTERNAL fgc_rkh68
     !-----------------------------------------------------------------------
@@ -107,8 +110,18 @@ SUBROUTINE beams3d_follow_gc
     
     ! Break up the work
     CALL MPI_CALC_MYRANGE(MPI_COMM_BEAMS, 1, nparticles, mystart, myend)
+    
+    !Create file with dynamical name
+    ! Write the integer into a string:
+    write(file_id, '(i0)') mystart
+
+    ! Construct the filename:
+    filename = 'file' // trim(adjustl(file_id)) // '.dat'
+    open(10*mystart,file = trim(filename), form='unformatted')
+    close(10*mystart)
 
     ! Save mystart and myend
+    !WRITE(6, '(A)') '----- CREATING FILES -----'
     mystart_save = mystart
     myend_save = myend
 
@@ -136,16 +149,16 @@ SUBROUTINE beams3d_follow_gc
     IF (ALLOCATED(B_lines)) DEALLOCATE(B_lines)
     IF (ALLOCATED(moment_lines)) DEALLOCATE(moment_lines)
     IF (ALLOCATED(neut_lines)) DEALLOCATE(neut_lines)
-    IF (ALLOCATED(R_box)) DEALLOCATE(R_box)
-    IF (ALLOCATED(Z_box)) DEALLOCATE(Z_box)
-    IF (ALLOCATED(PHI_box)) DEALLOCATE(PHI_box)
-    IF (ALLOCATED(vll_box)) DEALLOCATE(vll_box)
-    IF (ALLOCATED(S_box)) DEALLOCATE(S_box)
-    IF (ALLOCATED(U_box)) DEALLOCATE(U_box)
-    IF (ALLOCATED(B_box)) DEALLOCATE(B_box)
-    IF (ALLOCATED(moment_box)) DEALLOCATE(moment_box)
-    IF (ALLOCATED(neut_box)) DEALLOCATE(neut_box)
-    IF (ALLOCATED(line_box)) DEALLOCATE(line_box)
+    !IF (ALLOCATED(R_box)) DEALLOCATE(R_box)
+    !IF (ALLOCATED(Z_box)) DEALLOCATE(Z_box)
+    !IF (ALLOCATED(PHI_box)) DEALLOCATE(PHI_box)
+    !IF (ALLOCATED(vll_box)) DEALLOCATE(vll_box)
+    !IF (ALLOCATED(S_box)) DEALLOCATE(S_box)
+    !IF (ALLOCATED(U_box)) DEALLOCATE(U_box)
+    !IF (ALLOCATED(B_box)) DEALLOCATE(B_box)
+    !IF (ALLOCATED(moment_box)) DEALLOCATE(moment_box)
+    !IF (ALLOCATED(neut_box)) DEALLOCATE(neut_box)
+    !IF (ALLOCATED(line_box)) DEALLOCATE(line_box)
     
     ! Output some stuff
     IF (lverb) THEN
@@ -170,10 +183,10 @@ SUBROUTINE beams3d_follow_gc
              PHI_lines(0:npoinc, mystart:myend), vll_lines(0:npoinc, mystart:myend), moment_lines(0:npoinc, mystart:myend), &
              neut_lines(0:npoinc, mystart:myend), S_lines(0:npoinc, mystart:myend), U_lines(0:npoinc, mystart:myend), &
               B_lines(0:npoinc, mystart:myend), STAT = ier)
-    ALLOCATE(R_box(mystart:myend), Z_box(mystart:myend), &
-             PHI_box(mystart:myend), vll_box(mystart:myend), moment_box(mystart:myend), &
-             neut_box(mystart:myend), S_box(mystart:myend), U_box(mystart:myend), &
-              B_box(mystart:myend), line_box(mystart:myend), STAT = ier)
+    !ALLOCATE(R_box(mystart:myend), Z_box(mystart:myend), &
+    !         PHI_box(mystart:myend), vll_box(mystart:myend), moment_box(mystart:myend), &
+    !         neut_box(mystart:myend), S_box(mystart:myend), U_box(mystart:myend), &
+    !          B_box(mystart:myend), line_box(mystart:myend), STAT = ier)
     IF (ier /= 0) CALL handle_err(ALLOC_ERR, 'R_LINES, PHI_LINES, Z_LINES', ier)
     ALLOCATE(t_last(mystart:myend), STAT = ier)
     IF (ier /= 0) CALL handle_err(ALLOC_ERR, 't_last', ier)
@@ -189,12 +202,12 @@ SUBROUTINE beams3d_follow_gc
     vll_lines(0, mystart:myend) = vll_start(mystart:myend)
     moment_lines(0, mystart:myend) = mu_start(mystart:myend)
     neut_lines(0, mystart:myend) = .FALSE.
-    R_box(mystart:myend) = R_start(mystart:myend)
-    Z_box(mystart:myend) = Z_start(mystart:myend)
-    PHI_box(mystart:myend) = phi_start(mystart:myend)
-    vll_box(mystart:myend) = vll_start(mystart:myend)
-    moment_box(mystart:myend) = mu_start(mystart:myend)
-    neut_box(mystart:myend) = .FALSE.
+    !R_box(mystart:myend) = R_start(mystart:myend)
+    !Z_box(mystart:myend) = Z_start(mystart:myend)
+    !PHI_box(mystart:myend) = phi_start(mystart:myend)
+    !vll_box(mystart:myend) = vll_start(mystart:myend)
+    !moment_box(mystart:myend) = mu_start(mystart:myend)
+    !neut_box(mystart:myend) = .FALSE.
 
     IF (lbeam) neut_lines(0, mystart:myend) = .TRUE.
 
@@ -228,6 +241,7 @@ SUBROUTINE beams3d_follow_gc
                     fact_pa   = plasma_mass/(mymass*plasma_Zmean)
                     fact_coul = myZ*(mymass+plasma_mass)/(mymass*plasma_mass*6.02214076208E+26)
                     myv_neut(:) = v_neut(:,myline)
+		    CALL bounding_box(tf_nag,q,filename,mystart)
                     IF (lbeam) lneut = .TRUE.
                     CALL out_beams3d_nag(tf_nag,q)
                     IF (lbeam) THEN
@@ -236,11 +250,13 @@ SUBROUTINE beams3d_follow_gc
                        CALL beams3d_follow_neut(t_nag,q)
                        mytdex = 1; ndt =1
                        tf_nag = t_nag
+                       CALL bounding_box(tf_nag,q,filename,mystart)
                        CALL out_beams3d_nag(tf_nag,q)
                        IF (tf_nag > t_end(l)) CYCLE  ! Detect end shinethrough particle
                        ! Ionize
                        CALL beams3d_ionize(tf_nag,q)
                        mytdex = 2; ndt =1
+                       CALL bounding_box(tf_nag,q,filename,mystart)
                        CALL out_beams3d_nag(tf_nag,q)
                        ltherm = .FALSE.
                        lcollision = .TRUE.
@@ -254,6 +270,7 @@ SUBROUTINE beams3d_follow_gc
                        CALL D02CJF(t_nag,tf_nag,neqs_nag,q,fgc_nag,tol_nag,relab,out_beams3d_nag,D02CJW,w,ier)
                        IF (ier < 0) CALL handle_err(D02CJF_ERR, 'beams3d_follow', ier)
                        t_last(l) = tf_nag ! Save the value here in case out_beams3d changes it
+                       CALL bounding_box(tf_nag,q,filename,mystart)
                        CALL out_beams3d_nag(tf_nag,q)
                        IF (ABS(tf_nag) > ABS(my_end)) EXIT
                     END DO
@@ -288,6 +305,7 @@ SUBROUTINE beams3d_follow_gc
                     fact_pa   = plasma_mass/(mymass*plasma_Zmean)
                     fact_coul = myZ*(mymass+plasma_mass)/(mymass*plasma_mass*6.02214076208E+26)
                     myv_neut(:) = v_neut(:,myline)
+		    CALL bounding_box(tf_nag,q,filename,mystart)
                     IF (lbeam) lneut = .TRUE.
                     CALL out_beams3d_nag(tf_nag,q)
                     IF (lbeam) THEN
@@ -296,11 +314,13 @@ SUBROUTINE beams3d_follow_gc
                        CALL beams3d_follow_neut(t_nag,q)
                        mytdex = 1; ndt =1
                        tf_nag = t_nag
+		       CALL bounding_box(tf_nag,q,filename,mystart)
                        CALL out_beams3d_nag(tf_nag,q)
                        IF (tf_nag > t_end(l)) CYCLE  ! Detect end shinethrough particle
                        ! Ionize
                        CALL beams3d_ionize(tf_nag,q)
                        mytdex = 2; ndt =1
+                       CALL bounding_box(tf_nag,q,filename,mystart)
                        CALL out_beams3d_nag(tf_nag,q)
                        ltherm = .FALSE.
                        lcollision = .TRUE.
@@ -320,6 +340,7 @@ SUBROUTINE beams3d_follow_gc
                         t_nag = t_nag+dt
                         tf_nag = tf_nag+dt
                         t_last(l) = tf_nag ! Save the value here in case out_beams3d changes it
+                        CALL bounding_box(tf_nag,q,filename,mystart)
                         CALL out_beams3d_nag(tf_nag,q)
                         IF ((istate == -1) .or. (istate ==-2) .or. (ABS(tf_nag) > ABS(my_end)) ) EXIT
                     END DO
@@ -376,6 +397,7 @@ SUBROUTINE beams3d_follow_gc
                     ! Setup timestep
                     !CALL beams3d_calc_dt(q,moment,mymass,dt)
                     ! Begin handling particle.
+                    CALL bounding_box(tf_nag,q,filename,mystart)
                     IF (lbeam) lneut = .TRUE.
                     CALL out_beams3d_nag(tf_nag,q)
                     IF (lbeam) THEN
@@ -384,11 +406,13 @@ SUBROUTINE beams3d_follow_gc
                        CALL beams3d_follow_neut(t_nag,q)
                        mytdex = 1
                        tf_nag = t_nag
+		       CALL bounding_box(tf_nag,q,filename,mystart)
                        CALL out_beams3d_nag(tf_nag,q)
                        IF (tf_nag > t_end(l)) CYCLE  ! Detect end shinethrough particle
                        ! Ionize
                        CALL beams3d_ionize(tf_nag,q)
                        mytdex = 2
+		       CALL bounding_box(tf_nag,q,filename,mystart)
                        CALL out_beams3d_nag(tf_nag,q)
                        ltherm = .FALSE.
                        lcollision = .TRUE.
@@ -422,6 +446,7 @@ SUBROUTINE beams3d_follow_gc
                         END IF
                         iwork(11) = 0; iwork(12) = 0; iwork(13) = 0
                         t_last(l) = tf_nag ! Save the value here in case out_beams3d changes it
+                        CALL bounding_box(tf_nag,q,filename,mystart)
                         CALL out_beams3d_nag(tf_nag,q)
                         IF ((istate == -1) .or. (istate ==-2) .or. (ABS(tf_nag) > ABS(my_end)) ) EXIT
                     END DO
@@ -435,6 +460,10 @@ SUBROUTINE beams3d_follow_gc
         END SELECT
     END IF
       
+    !Added (closed earlier)
+    !close(10*mystart)
+    !CALL bounding_box(tf_nag,q,filename,mystart)
+
     IF (lverb) THEN
        CALL backspace_out(6,36)
        CALL FLUSH(6)
@@ -505,16 +534,16 @@ SUBROUTINE beams3d_follow_gc
     CALL beams3d_write_parhdf5(0, npoinc, 1, nparticles, mystart, myend,      'U_lines', DBLVAR=U_lines)
     CALL beams3d_write_parhdf5(0, npoinc, 1, nparticles, mystart, myend,      'B_lines', DBLVAR=B_lines)
     CALL beams3d_write1d_parhdf5(         1, nparticles, mystart, myend,      't_end',   DBLVAR=t_last,FILENAME='beams3d_'//TRIM(id_string))
-    sizeb=SIZE(line_box)
-    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,      'R_box', DBLVAR=R_box)                                                                                                                                                                           
-    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,   'PHI_box', DBLVAR=PHI_box)                                                                                                                                                                         
-    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,     'Z_box', DBLVAR=Z_box)                                                                                                                                                                           
-    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,   'vll_box', DBLVAR=vll_box)                                                                                                                                                                         
-    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend, 'moment_box', DBLVAR=moment_box)                                                                                                                                                                      
-    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,     'S_box', DBLVAR=S_box)                                                                                                                                                                           
-    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,     'U_box', DBLVAR=U_box)                                                                                                                                                                           
-    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,     'B_box', DBLVAR=B_box)
-    CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,     'line_box', INTVAR=line_box)
+    !sizeb=SIZE(line_box)
+    !CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,      'R_box', DBLVAR=R_box)                                                                                                                                                                           
+    !CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,   'PHI_box', DBLVAR=PHI_box)                                                                                                                                                                         
+    !CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,     'Z_box', DBLVAR=Z_box)                                                                                                                                                                           
+    !CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,   'vll_box', DBLVAR=vll_box)                                                                                                                                                                         
+    !CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend, 'moment_box', DBLVAR=moment_box)                                                                                                                                                                      
+    !CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,     'S_box', DBLVAR=S_box)                                                                                                                                                                           
+    !CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,     'U_box', DBLVAR=U_box)                                                                                                                                                                           
+    !CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,     'B_box', DBLVAR=B_box)
+    !CALL beams3d_write1d_parhdf5(0, sizeb, mystart, myend,     'line_box', INTVAR=line_box)
     ALLOCATE(itemp(0:npoinc,mystart:myend))
     itemp = 0; WHERE(neut_lines) itemp=1;
     CALL beams3d_write_parhdf5(0, npoinc, 1, nparticles, mystart, myend,   'neut_lines', INTVAR=itemp)

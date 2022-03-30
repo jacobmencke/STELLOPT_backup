@@ -280,38 +280,6 @@
                CALL write_var_hdf5(fid,'B_lines',npoinc+1,nparticles,ier,DBLVAR=B_lines,ATT='|B| along Fieldline',&
                                    ATT_NAME='description')
                IF (ier /= 0) CALL handle_err(HDF5_WRITE_ERR,'B_lines',ier)
-               sizeb=size(R_box)
-	       !ADDED R_box(:), Z_box(:), PHI_box(:),vll_box(:), neut_box(:), moment_box, S_box(:), U_box(:), B_box(:), line_box(:)
-               CALL write_var_hdf5(fid,'R_box',sizeb,ier,DBLVAR=R_box,ATT='Cylindrical R of Trajectory in region [m]',&
-                                   ATT_NAME='description')
-               IF (ier /= 0) CALL handle_err(HDF5_WRITE_ERR,'R_box',ier)
-               CALL write_var_hdf5(fid,'Z_box',sizeb,ier,DBLVAR=Z_box,ATT='Cylindrical Z of Trajectory in region [m]',&
-                                   ATT_NAME='description')
-               IF (ier /= 0) CALL handle_err(HDF5_WRITE_ERR,'Z_box',ier)
-               CALL write_var_hdf5(fid,'PHI_box',sizeb,ier,DBLVAR=PHI_box,ATT='Cylindrical Phi of Trajectory in region [rad]',&
-                                   ATT_NAME='description')
-               IF (ier /= 0) CALL handle_err(HDF5_WRITE_ERR,'PHI_box',ier)
-               CALL write_var_hdf5(fid,'vll_box',sizeb,ier,DBLVAR=vll_box,ATT='Parallel Particle Velocity in region [m/s]',&
-                                   ATT_NAME='description')
-               IF (ier /= 0) CALL handle_err(HDF5_WRITE_ERR,'vll_box',ier)
-               CALL write_var_hdf5(fid,'neut_box',sizeb,ier,BOOVAR=neut_box,ATT='Neutral Indicator [1=Neut.]',&
-                                   ATT_NAME='description')
-               IF (ier /= 0) CALL handle_err(HDF5_WRITE_ERR,'neut_box',ier)
-               CALL write_var_hdf5(fid,'moment_box',sizeb,ier,DBLVAR=moment_box,&
-                                   ATT='Magnetic Moment [kg m^2 /s^2 T ]',ATT_NAME='description')
-               IF (ier /= 0) CALL handle_err(HDF5_WRITE_ERR,'moment_box',ier)
-               CALL write_var_hdf5(fid,'S_box',sizeb,ier,DBLVAR=S_box,ATT='Toroidal Flux Coordinate',&
-                                   ATT_NAME='description')
-               IF (ier /= 0) CALL handle_err(HDF5_WRITE_ERR,'S_box',ier)
-               CALL write_var_hdf5(fid,'U_box',sizeb,ier,DBLVAR=U_box,ATT='U Flux Coordinate',&
-                                   ATT_NAME='description')
-               IF (ier /= 0) CALL handle_err(HDF5_WRITE_ERR,'U_box',ier)
-               CALL write_var_hdf5(fid,'B_box',sizeb,ier,DBLVAR=B_box,ATT='|B| along Fieldline',&
-                                   ATT_NAME='description')
-               IF (ier /= 0) CALL handle_err(HDF5_WRITE_ERR,'B_box',ier)
-               CALL write_var_hdf5(fid,'line_box',sizeb,ier,INTVAR=line_box,ATT='#Of particle',&
-                                   ATT_NAME='description')                                                                                                                                                                                                                                    
-               IF (ier /= 0) CALL handle_err(HDF5_WRITE_ERR,'line_box',ier)
                IF (ASSOCIATED(ihit_array)) THEN
                   CALL write_var_hdf5(fid,'wall_strikes',nface,ier,INTVAR=ihit_array,&
                                    ATT='Wall Strikes',ATT_NAME='description')
@@ -406,6 +374,14 @@
       WRITE(iunit,*) S_lines
       WRITE(iunit,*) U_lines
       WRITE(iunit,*) V_lines
+      !WRITE(iunit,*) R_box
+      !WRITE(iunit,*) Z_box
+      !WRITE(iunit,*) PHI_box
+      !WRITE(iunit,*) vll_box
+      !WRITE(iunit,*) S_box
+      !WRITE(iunit,*) U_box
+      !WRITE(iunit,*) V_box
+      !WRITE(iunit,*) line_box
       IF (lbeam) THEN
          WRITE(iunit,*) weight
          WRITE(iunit,*) beam

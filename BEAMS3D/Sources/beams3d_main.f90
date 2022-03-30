@@ -357,7 +357,10 @@ PROGRAM BEAMS3D
     IF (ierr_mpi /= MPI_SUCCESS) CALL handle_err(MPI_FINE_ERR, 'beams3d_main', ierr_mpi)
 #endif
     IF (lverb) WRITE(6, '(A)') '----- BEAMS3D DONE -----'
-
+    !Added
+    IF (lverb) WRITE(6, '(A)') '----- MERGING FILES -----'
+    CALL mergefiles
+    IF (lverb) WRITE(6, '(A)') '----- MERGING DONE -----'
     !-----------------------------------------------------------------------
     !     End Program
     !-----------------------------------------------------------------------

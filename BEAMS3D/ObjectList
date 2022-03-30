@@ -39,5 +39,5 @@ beams3d_input_mod.o \
 beams3d_init_beams.o \
 fgc_rkh68.o \
 fgc_lsode.o \
-DynamicalArrays.o \
+mergefiles.o \
 bounding_box.o

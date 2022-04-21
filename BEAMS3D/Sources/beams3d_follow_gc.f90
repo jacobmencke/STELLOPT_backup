@@ -111,14 +111,19 @@ SUBROUTINE beams3d_follow_gc
     ! Break up the work
     CALL MPI_CALC_MYRANGE(MPI_COMM_BEAMS, 1, nparticles, mystart, myend)
     
-    !Create file with dynamical name
-    ! Write the integer into a string:
-    write(file_id, '(i0)') mystart
+    IF (lfida_track) THEN
+       !Create file with dynamical name
+       ! Write the integer into a string:
+       write(file_id, '(i0)') mystart
 
-    ! Construct the filename:
-    filename = 'file' // trim(adjustl(file_id)) // '.dat'
-    open(10*mystart,file = trim(filename), form='unformatted')
-    close(10*mystart)
+       ! Construct the filename:
+       filename = 'file' // trim(adjustl(file_id))
+       open(10*mystart,file = trim(filename)//'.dat', form='unformatted')
+       close(10*mystart)
+       open(10*mystart+1,file = trim(filename)// '.txt', form='unformatted')                                                                                                                                                                                                             
+       write(10*mystart+1) 0
+       close(10*mystart+1)
+    END IF
 
     ! Save mystart and myend
     !WRITE(6, '(A)') '----- CREATING FILES -----'
@@ -241,7 +246,9 @@ SUBROUTINE beams3d_follow_gc
                     fact_pa   = plasma_mass/(mymass*plasma_Zmean)
                     fact_coul = myZ*(mymass+plasma_mass)/(mymass*plasma_mass*6.02214076208E+26)
                     myv_neut(:) = v_neut(:,myline)
+		    IF (lfida_track) THEN
 		    CALL bounding_box(tf_nag,q,filename,mystart)
+		    END IF
                     IF (lbeam) lneut = .TRUE.
                     CALL out_beams3d_nag(tf_nag,q)
                     IF (lbeam) THEN
@@ -250,13 +257,17 @@ SUBROUTINE beams3d_follow_gc
                        CALL beams3d_follow_neut(t_nag,q)
                        mytdex = 1; ndt =1
                        tf_nag = t_nag
+                       IF (lfida_track) THEN
                        CALL bounding_box(tf_nag,q,filename,mystart)
+                       END IF
                        CALL out_beams3d_nag(tf_nag,q)
                        IF (tf_nag > t_end(l)) CYCLE  ! Detect end shinethrough particle
                        ! Ionize
                        CALL beams3d_ionize(tf_nag,q)
                        mytdex = 2; ndt =1
+                       IF (lfida_track) THEN
                        CALL bounding_box(tf_nag,q,filename,mystart)
+                       END IF
                        CALL out_beams3d_nag(tf_nag,q)
                        ltherm = .FALSE.
                        lcollision = .TRUE.
@@ -270,7 +281,9 @@ SUBROUTINE beams3d_follow_gc
                        CALL D02CJF(t_nag,tf_nag,neqs_nag,q,fgc_nag,tol_nag,relab,out_beams3d_nag,D02CJW,w,ier)
                        IF (ier < 0) CALL handle_err(D02CJF_ERR, 'beams3d_follow', ier)
                        t_last(l) = tf_nag ! Save the value here in case out_beams3d changes it
+                       IF (lfida_track) THEN
                        CALL bounding_box(tf_nag,q,filename,mystart)
+                       END IF
                        CALL out_beams3d_nag(tf_nag,q)
                        IF (ABS(tf_nag) > ABS(my_end)) EXIT
                     END DO
@@ -305,7 +318,9 @@ SUBROUTINE beams3d_follow_gc
                     fact_pa   = plasma_mass/(mymass*plasma_Zmean)
                     fact_coul = myZ*(mymass+plasma_mass)/(mymass*plasma_mass*6.02214076208E+26)
                     myv_neut(:) = v_neut(:,myline)
-		    CALL bounding_box(tf_nag,q,filename,mystart)
+		    IF (lfida_track) THEN
+                    CALL bounding_box(tf_nag,q,filename,mystart)
+                    END IF
                     IF (lbeam) lneut = .TRUE.
                     CALL out_beams3d_nag(tf_nag,q)
                     IF (lbeam) THEN
@@ -314,13 +329,17 @@ SUBROUTINE beams3d_follow_gc
                        CALL beams3d_follow_neut(t_nag,q)
                        mytdex = 1; ndt =1
                        tf_nag = t_nag
-		       CALL bounding_box(tf_nag,q,filename,mystart)
+		       IF (lfida_track) THEN
+                       CALL bounding_box(tf_nag,q,filename,mystart)
+                       END IF
                        CALL out_beams3d_nag(tf_nag,q)
                        IF (tf_nag > t_end(l)) CYCLE  ! Detect end shinethrough particle
                        ! Ionize
                        CALL beams3d_ionize(tf_nag,q)
                        mytdex = 2; ndt =1
+                       IF (lfida_track) THEN
                        CALL bounding_box(tf_nag,q,filename,mystart)
+                       END IF
                        CALL out_beams3d_nag(tf_nag,q)
                        ltherm = .FALSE.
                        lcollision = .TRUE.
@@ -340,7 +359,9 @@ SUBROUTINE beams3d_follow_gc
                         t_nag = t_nag+dt
                         tf_nag = tf_nag+dt
                         t_last(l) = tf_nag ! Save the value here in case out_beams3d changes it
+                        IF (lfida_track) THEN
                         CALL bounding_box(tf_nag,q,filename,mystart)
+                        END IF
                         CALL out_beams3d_nag(tf_nag,q)
                         IF ((istate == -1) .or. (istate ==-2) .or. (ABS(tf_nag) > ABS(my_end)) ) EXIT
                     END DO
@@ -397,7 +418,9 @@ SUBROUTINE beams3d_follow_gc
                     ! Setup timestep
                     !CALL beams3d_calc_dt(q,moment,mymass,dt)
                     ! Begin handling particle.
+                    IF (lfida_track) THEN
                     CALL bounding_box(tf_nag,q,filename,mystart)
+                    END IF
                     IF (lbeam) lneut = .TRUE.
                     CALL out_beams3d_nag(tf_nag,q)
                     IF (lbeam) THEN
@@ -406,13 +429,17 @@ SUBROUTINE beams3d_follow_gc
                        CALL beams3d_follow_neut(t_nag,q)
                        mytdex = 1
                        tf_nag = t_nag
-		       CALL bounding_box(tf_nag,q,filename,mystart)
+		       IF (lfida_track) THEN
+                       CALL bounding_box(tf_nag,q,filename,mystart)
+                       END IF
                        CALL out_beams3d_nag(tf_nag,q)
                        IF (tf_nag > t_end(l)) CYCLE  ! Detect end shinethrough particle
                        ! Ionize
                        CALL beams3d_ionize(tf_nag,q)
                        mytdex = 2
-		       CALL bounding_box(tf_nag,q,filename,mystart)
+		       IF (lfida_track) THEN
+                       CALL bounding_box(tf_nag,q,filename,mystart)
+                       END IF
                        CALL out_beams3d_nag(tf_nag,q)
                        ltherm = .FALSE.
                        lcollision = .TRUE.
@@ -446,7 +473,9 @@ SUBROUTINE beams3d_follow_gc
                         END IF
                         iwork(11) = 0; iwork(12) = 0; iwork(13) = 0
                         t_last(l) = tf_nag ! Save the value here in case out_beams3d changes it
+                        IF (lfida_track) THEN
                         CALL bounding_box(tf_nag,q,filename,mystart)
+                        END IF
                         CALL out_beams3d_nag(tf_nag,q)
                         IF ((istate == -1) .or. (istate ==-2) .or. (ABS(tf_nag) > ABS(my_end)) ) EXIT
                     END DO

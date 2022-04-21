@@ -76,6 +76,7 @@ PROGRAM BEAMS3D
     to3 = REAL(2)/REAL(3)
     lverb = .true.
     lread_input = .true.
+    
     IF (myworkid == master) THEN
         numargs = 0
         i = 0
@@ -106,6 +107,7 @@ PROGRAM BEAMS3D
         lsuzuki = .false.
         lfusion = .false.
         lfusion_alpha = .false.
+	lfida_track = .false.
         id_string = ''
         coil_string = ''
         mgrid_string = ''
@@ -124,6 +126,8 @@ PROGRAM BEAMS3D
             select case (args(i))
             case ("-noverb") ! No Verbose Output
                 lverb = .false.
+	    case ("-fidatrack") ! (ADDED, tracking particles in fida region)
+                lfida_track = .true.
             case ("-vac") ! Vacuum Fields Only
                 lvac = .true.
             case ("-ascot","-ascot5")
@@ -290,6 +294,8 @@ PROGRAM BEAMS3D
     IF (ierr_mpi /= MPI_SUCCESS) CALL handle_err(MPI_BCAST_ERR, 'beams3d_main', ierr_mpi)
     CALL MPI_BCAST(lascot, 1, MPI_LOGICAL, master, MPI_COMM_BEAMS, ierr_mpi)
     IF (ierr_mpi /= MPI_SUCCESS) CALL handle_err(MPI_BCAST_ERR, 'beams3d_main', ierr_mpi)
+    CALL MPI_BCAST(lfida_track, 1, MPI_LOGICAL, master, MPI_COMM_BEAMS, ierr_mpi)                                                                                                                                                                                                          
+    IF (ierr_mpi /= MPI_SUCCESS) CALL handle_err(MPI_BCAST_ERR, 'beams3d_main', ierr_mpi)
     CALL MPI_BCAST(lascotfl, 1, MPI_LOGICAL, master, MPI_COMM_BEAMS, ierr_mpi)
     IF (ierr_mpi /= MPI_SUCCESS) CALL handle_err(MPI_BCAST_ERR, 'beams3d_main', ierr_mpi)
     CALL MPI_BCAST(lascot4, 1, MPI_LOGICAL, master, MPI_COMM_BEAMS, ierr_mpi)
@@ -358,9 +364,11 @@ PROGRAM BEAMS3D
 #endif
     IF (lverb) WRITE(6, '(A)') '----- BEAMS3D DONE -----'
     !Added
-    IF (lverb) WRITE(6, '(A)') '----- MERGING FILES -----'
-    CALL mergefiles
-    IF (lverb) WRITE(6, '(A)') '----- MERGING DONE -----'
+    !IF (lfida_track) THEN
+    !   IF (lverb) WRITE(6, '(A)') '----- MERGING FILES -----'
+    !   CALL mergefiles
+    !   IF (lverb) WRITE(6, '(A)') '----- MERGING DONE -----'
+    !END IF
     !-----------------------------------------------------------------------
     !     End Program
     !-----------------------------------------------------------------------

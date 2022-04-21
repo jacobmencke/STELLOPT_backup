@@ -39,7 +39,7 @@ SUBROUTINE bounding_box(t, q, filename, mystart)
     !     jint      Index along phi
     !-----------------------------------------------------------------------
     LOGICAL             :: lhit
-    INTEGER             :: ier, d1, d2, d3, d4, d5                                                                          
+    INTEGER             :: ier, d1, d2, d3, d4, d5, n                                                                          
     DOUBLE PRECISION         :: x0,y0,z0,x1,y1,z1,xw,yw,zw, vperp
     !DOUBLE PRECISION         :: R_box, Z_box, PHI_box, vll_box, neut_box, S_box, U_box, B_box
     DOUBLE PRECISION    :: q2(4),qdot(4)                                                                                    
@@ -62,9 +62,16 @@ SUBROUTINE bounding_box(t, q, filename, mystart)
     IF ((q(1) >= 5.00) .and. (q(1) <= 6.29) .and. &
         (x0 >= 1.47) .and. (x0 <= 1.63) .and. &
         (q(3) >= -0.05) .and. (q(3) <= 0.59)) THEN
+       open(10*mystart+1,file = trim(filename)//'.txt',status="old",action="read",form='unformatted')
+       read(10*mystart+1) n
+       close(10*mystart+1)
+       open(10*mystart+1,file = trim(filename)//'.txt',status="replace",action="write",form='unformatted')
+       write(10*mystart+1) n+1
+       close(10*mystart+1)      
        !open(unit=1,file=filename,form='unformatted')
        !write(6,'(A)') '-----------Open File---------'
-       open(10*mystart,file = trim(filename),status="old", position="append", action="write",form='unformatted')
+       open(10*mystart,file = trim(filename)//'.dat',status="old", position="append",action="write",form='unformatted')
+       !open(10,file = 'Complete.dat',status="old", position="append",action="write",form='unformatted')
        x0 = MOD(q(2), phimax)
        IF (x0 < 0) x0 = x0 + phimax
        !close(1) 
